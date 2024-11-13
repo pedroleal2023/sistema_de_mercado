@@ -1,9 +1,6 @@
+// routes/login.js
 const express = require('express');
-const app = express();
-const cors = require('cors');
-
-app.use(express.json());  // Para lidar com o JSON enviado no body
-app.use(cors());          // Habilita CORS para permitir requisições de diferentes origens
+const router = express.Router();
 
 // Dados de exemplo (substitua com seu banco de dados)
 const usuarios = [
@@ -11,7 +8,8 @@ const usuarios = [
   { cpf: '09876543210', senha: 'senha456', permissao: 'G' }
 ];
 
-app.post('/api/login', (req, res) => {
+// Rota de login (sem /api, diretamente /login)
+router.post('/', (req, res) => {
   const { cpf, senha } = req.body;
 
   const usuario = usuarios.find(u => u.cpf === cpf && u.senha === senha);
@@ -25,6 +23,4 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-app.listen(3002, () => {
-  console.log('Servidor rodando na porta 3002');
-});
+module.exports = router;
