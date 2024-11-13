@@ -1,0 +1,34 @@
+<!-- venda.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendas</title>
+</head>
+<body>
+    <h2>Registro de Venda</h2>
+    <form id="vendaForm">
+        <input type="number" id="codigo_produto" placeholder="Código do Produto" required>
+        <input type="number" id="quantidade" placeholder="Quantidade" required>
+        <button type="submit">Registrar Venda</button>
+    </form>
+
+    <script>
+        document.getElementById('vendaForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const codigo_produto = document.getElementById('codigo_produto').value;
+            const quantidade = document.getElementById('quantidade').value;
+
+            fetch('http://localhost:3002/api/vendas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ codigo_produto, quantidade })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Erro na venda:', error));
+        });
+    </script>
+</body>
+</html>

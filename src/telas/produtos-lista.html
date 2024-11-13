@@ -1,0 +1,25 @@
+<!-- produtos_vendidos.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos Vendidos</title>
+</head>
+<body>
+    <h2>Lista de Produtos Vendidos</h2>
+    <div id="produtosVendidos"></div>
+
+    <script>
+        fetch('http://localhost:3002/api/vendas')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('produtosVendidos');
+                container.innerHTML = data.map(venda => 
+                    `<p>Produto: ${venda.nome} - Quantidade: ${venda.quantidade} - Data: ${venda.data}</p>`
+                ).join('');
+            })
+            .catch(error => console.error('Erro ao carregar:', error));
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!-- cadastro_produto.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Produtos</title>
+</head>
+<body>
+    <h2>Cadastro de Produtos</h2>
+    <form id="produtoForm">
+        <input type="text" id="nome" placeholder="Nome do Produto" required>
+        <input type="number" id="preco" placeholder="Preço" required>
+        <input type="number" id="quantidade" placeholder="Quantidade" required>
+        <button type="submit">Cadastrar Produto</button>
+    </form>
+
+    <script>
+        if (localStorage.getItem('permissao') !== 'A') {
+            alert('Acesso negado');
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('produtoForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const nome = document.getElementById('nome').value;
+            const preco = document.getElementById('preco').value;
+            const quantidade = document.getElementById('quantidade').value;
+
+            fetch('http://localhost:3002/api/produtos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, preco, quantidade })
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Erro no cadastro:', error));
+        });
+    </script>
+</body>
+</html>

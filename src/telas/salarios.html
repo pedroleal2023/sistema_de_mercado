@@ -1,0 +1,30 @@
+<!-- salarios.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salários dos Funcionários</title>
+</head>
+<body>
+    <h2>Lista de Salários</h2>
+    <div id="salarios"></div>
+
+    <script>
+        if (localStorage.getItem('permissao') !== 'A') {
+            alert('Acesso negado');
+            window.location.href = 'login.html';
+        }
+
+        fetch('http://localhost:3002/api/funcionarios/salarios')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('salarios');
+                container.innerHTML = data.map(func => 
+                    `<p>Funcionário: ${func.nome} - Salário: ${func.salario}</p>`
+                ).join('');
+            })
+            .catch(error => console.error('Erro ao carregar:', error));
+    </script>
+</body>
+</html>
