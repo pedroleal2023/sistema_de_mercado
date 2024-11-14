@@ -8,7 +8,7 @@ document.getElementById('usuario-form').addEventListener('submit', function(even
     const permissao = document.getElementById('permissao').value;
   
     // Envia os dados via fetch para a API de cadastro
-    fetch('http://localhost:3002/cadastro', {
+    fetch('http://localhost:3002/usuarios', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

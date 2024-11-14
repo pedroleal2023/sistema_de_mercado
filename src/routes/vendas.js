@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');  // Certifique-se de importar o jwt
 const router = express.Router();
-const connection = require('./db');
+const connection = require('../db');
 
 // Middleware de autenticação
 function autenticar(req, res, next) {

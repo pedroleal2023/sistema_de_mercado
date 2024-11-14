@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const connection = require('./db');
+const connection = require('../db');
 
 // Rota de login do funcionário
 router.post('/login', (req, res) => {

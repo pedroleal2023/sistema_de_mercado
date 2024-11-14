@@ -1,14 +1,80 @@
-<!-- produtos_vendidos.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produtos Vendidos</title>
+    <style>
+        /* Estilos gerais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9; /* Cor de fundo suave */
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2e7d32; /* Verde escuro */
+            margin-bottom: 20px;
+        }
+
+        /* Estilo da lista de produtos */
+        .produto-item {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            text-align: left;
+        }
+
+        .produto-item p {
+            margin: 5px 0;
+        }
+
+        /* Estilo de alerta e mensagem */
+        p {
+            text-align: center;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        a {
+            color: #2e7d32;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h2>Lista de Produtos Vendidos</h2>
-    <div id="produtosVendidos"></div>
+    <div class="container">
+        <h2>Lista de Produtos Vendidos</h2>
+        <div id="produtosVendidos"></div>
+    </div>
 
     <script>
         fetch('http://localhost:3002/api/vendas')
@@ -16,7 +82,11 @@
             .then(data => {
                 const container = document.getElementById('produtosVendidos');
                 container.innerHTML = data.map(venda => 
-                    `<p>Produto: ${venda.nome} - Quantidade: ${venda.quantidade} - Data: ${venda.data}</p>`
+                    `<div class="produto-item">
+                        <p><strong>Produto:</strong> ${venda.nome}</p>
+                        <p><strong>Quantidade:</strong> ${venda.quantidade}</p>
+                        <p><strong>Data:</strong> ${venda.data}</p>
+                    </div>`
                 ).join('');
             })
             .catch(error => console.error('Erro ao carregar:', error));

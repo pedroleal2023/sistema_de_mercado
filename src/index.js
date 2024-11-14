@@ -12,10 +12,19 @@ app.use(cors());
 // Importa as rotas de produtos e login
 const productRoutes = require('./routes/products');
 const loginRoutes = require('./routes/login'); // Adicionando a rota de login
+const funcionariosRoutes = require ('./routes/funcionarios');
+const vendasRoutes = require ('./routes/vendas');
+const cadastroRoutes = require ('./routes/cadastro');
+
+
 
 // Usando as rotas
 app.use('/produtos', productRoutes);
 app.use('/login', loginRoutes); // A rota de login será acessada em /login
+app.use('/funcionarios', funcionariosRoutes); // A rota de login será acessada em /login
+app.use('/vendas', vendasRoutes); // A rota de login será acessada em /login
+app.use('/usuarios', cadastroRoutes); // A rota de login será acessada em /login
+
 
 // Rota de exemplo para checar se o servidor está online
 app.get('/', (req, res) => {
