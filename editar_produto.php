@@ -15,10 +15,10 @@ if ($conn->connect_error) {
     die("Falha na conexão com o banco de dados: " . $conn->connect_error);
 }
 
-// Captura o código do produto para edição (alterado de 'id' para 'codigo')
+// Captura o código do produto para edição
 $codigo = $_GET['codigo'];
 
-// Consulta para pegar os dados do produto (alterado 'id' para 'codigo')
+// Consulta para pegar os dados do produto
 $sql = "SELECT * FROM produtos WHERE codigo = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $codigo);
@@ -34,15 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $unid_medida = $_POST['unid_medida'];
     $quantidade = $_POST['quantidade'];
 
-    // Atualiza o produto no banco de dados (alterado 'id' para 'codigo')
+    // Atualiza o produto no banco de dados
     $sql_update = "UPDATE produtos SET nome = ?, preco = ?, validade = ?, unid_medida = ?, quantidade = ? WHERE codigo = ?";
     $stmt_update = $conn->prepare($sql_update);
-    $stmt_update->bind_param('ssdsi', $nome, $preco, $validade, $unid_medida, $quantidade, $codigo);
+    $stmt_update->bind_param('sdssii', $nome, $preco, $validade, $unid_medida, $quantidade, $codigo);
 
     if ($stmt_update->execute()) {
-        echo "<script>alert('Produto atualizado com sucesso!');window.location.href='produtos_listar.php';</script>";
+        echo "<script>alert('Produto atualizado com sucesso!');window.location.href='produtos.php';</script>";
     } else {
-        echo "<script>alert('Erro ao atualizar produto!');window.location.href='produtos_listar.php';</script>";
+        echo "<script>alert('Erro ao atualizar produto!');window.location.href='produtos.php';</script>";
     }
 }
 ?>
@@ -60,24 +60,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form action="" method="POST">
         <label for="nome">Nome do Produto:</label>
-        <input type="text" id="nome" name="nome" value="<?php echo $product['nome']; ?>" required>
+        <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($product['nome']); ?>" required>
 
         <label for="preco">Preço:</label>
-        <input type="text" id="preco" name="preco" value="<?php echo $product['preco']; ?>" required>
+        <input type="text" id="preco" name="preco" value="<?php echo htmlspecialchars($product['preco']); ?>" required>
 
         <label for="validade">Validade:</label>
-        <input type="date" id="validade" name="validade" value="<?php echo $product['validade']; ?>" required>
+        <input type="date" id="validade" name="validade" value="<?php echo htmlspecialchars($product['validade']); ?>" required>
 
         <label for="unid_medida">Unidade de Medida:</label>
-        <input type="text" id="unid_medida" name="unid_medida" value="<?php echo $product['unid_medida']; ?>" required>
+        <input type="text" id="unid_medida" name="unid_medida" value="<?php echo htmlspecialchars($product['unid_medida']); ?>" required>
 
         <label for="quantidade">Quantidade em Estoque:</label>
-        <input type="number" id="quantidade" name="quantidade" value="<?php echo $product['quantidade']; ?>" required>
+        <input type="number" id="quantidade" name="quantidade" value="<?php echo htmlspecialchars($product['quantidade']); ?>" required>
 
         <button type="submit">Atualizar Produto</button>
     </form>
 
-    <a href="produtos_listar.php">Voltar para a lista de produtos</a>
+    <a href="produtos.php">Voltar para a lista de produtos</a>
 </body>
 </html>
 

@@ -24,9 +24,9 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $codigo);
 
 if ($stmt->execute()) {
-    echo "<script>alert('Produto excluído com sucesso!');window.location.href='produtos_listar.php';</script>";
+    echo "<script>alert('Produto excluído com sucesso!');window.location.href='produtos.php';</script>";
 } else {
-    echo "<script>alert('Erro ao excluir produto!');window.location.href='produtos_listar.php';</script>";
+    echo "<script>alert('Erro ao excluir produto!');window.location.href='produtos.php';</script>";
 }
 
 $stmt->close();

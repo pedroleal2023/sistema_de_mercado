@@ -6,6 +6,18 @@ if (!isset($_SESSION['cpf'])) {
     header("Location: login.html"); // Redireciona para o login se não estiver logado
     exit();
 }
+
+// Conexão com o banco de dados
+$conn = new mysqli('127.0.0.1:3307', 'root', '', 'sistema_mercado');
+
+// Verifica se houve erro na conexão
+if ($conn->connect_error) {
+    die("Falha na conexão com o banco de dados: " . $conn->connect_error);
+}
+
+// Consulta para listar os produtos
+$sql_produtos = "SELECT codigo, nome, preco, validade, quantidade FROM produtos";
+$result_produtos = $conn->query($sql_produtos);
 ?>
 
 <!DOCTYPE html>
@@ -13,34 +25,59 @@ if (!isset($_SESSION['cpf'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Produtos</title>
-    <link rel="stylesheet" href="css/style.css"> <!-- Link para o arquivo CSS externo -->
+    <title>Lista de Produtos</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        // Função para confirmar a exclusão
+        function confirmarExclusao(url) {
+            if (confirm("Tem certeza que deseja excluir este produto?")) {
+                window.location.href = url;
+            }
+        }
+    </script>
 </head>
 <body>
-    <h1>Cadastro de Produtos</h1>
-    
     <div class="container">
-        <!-- Formulário de cadastro de produtos -->
-        <form action="cadastrar_produto.php" method="POST">
-            <label for="nome">Nome do Produto:</label>
-            <input type="text" id="nome" name="nome" required>
+        <h1>Lista de Produtos</h1>
+        <a href="cadastrar_produto.php"><button>Cadastrar Novo Produto</button></a>
+        <a href="dashboard.php"><button>Voltar ao Menu Principal</button></a>
+        <br><br>
 
-            <label for="preco">Preço:</label>
-            <input type="text" id="preco" name="preco" required>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Validade</th>
+                    <th>Quantidade</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                if ($result_produtos->num_rows > 0) {
+                    while ($produto = $result_produtos->fetch_assoc()) {
+                        echo "<tr>";
+                        echo "<td>" . $produto['codigo'] . "</td>";
+                        echo "<td>" . $produto['nome'] . "</td>";
+                        echo "<td>R$ " . number_format($produto['preco'], 2, ',', '.') . "</td>";
+                        echo "<td>" . $produto['validade'] . "</td>";
+                        echo "<td>" . $produto['quantidade'] . "</td>";
+                        echo "<td>
+                                <a href='editar_produto.php?codigo=" . $produto['codigo'] . "'><button>Editar</button></a>
+                                <button onclick=\"confirmarExclusao('excluir_produto.php?codigo=" . $produto['codigo'] . "')\">Excluir</button>
+                            </td>";
+                        echo "</tr>";
+                    }
+                } else {
+                    echo "<tr><td colspan='6'>Nenhum produto encontrado</td></tr>";
+                }
 
-            <label for="validade">Validade:</label>
-            <input type="date" id="validade" name="validade" required>
-
-            <label for="unid_medida">Unidade de Medida:</label>
-            <input type="text" id="unid_medida" name="unid_medida" required>
-
-            <label for="quantidade">Quantidade em Estoque:</label>
-            <input type="number" id="quantidade" name="quantidade" required>
-
-            <button type="submit">Cadastrar Produto</button>
-        </form>
+                $conn->close();
+                ?>
+            </tbody>
+        </table>
     </div>
-
-    <a href="dashboard.php">Voltar ao Dashboard</a>
 </body>
 </html>
