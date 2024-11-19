@@ -6,6 +6,9 @@ if (!isset($_SESSION['cpf'])) {
     header("Location: login.html"); // Redireciona para o login se não estiver logado
     exit();
 }
+
+// Verifica a permissão do usuário
+$permissao = $_SESSION['permissao'];
 ?>
 
 <!DOCTYPE html>
@@ -17,15 +20,20 @@ if (!isset($_SESSION['cpf'])) {
     <link rel="stylesheet" href="styles.css"> <!-- Se você tiver um CSS para o Dashboard -->
 </head>
 <body>
-    <h1>Bem-vindo ao Sistema de Mercado!</h1>
-    <p>Você está logado como CPF: <?php echo $_SESSION['cpf']; ?></p>
+    <div class="container">
+        <h1>Bem-vindo ao seu Sistema de Mercado!</h1>
+        <p>Você está logado como CPF: <?php echo $_SESSION['cpf']; ?></p>
 
-    <h2>Menu:</h2>
-    <ul>
-        <li><a href="produtos.php">Cadastro de Produtos</a></li>
-        <li><a href="funcionarios.php">Cadastro de Funcionários</a></li>
-        <li><a href="vendas.php">Cadastrar Venda</a></li>
-        <li><a href="logout.php">Sair</a></li>
-    </ul>
+        <h2>Menu:</h2>
+        <div class="menu">
+            <a href="produtos.php" class="menu-btn">Cadastro de Produtos</a>
+            <!-- Exibe o link de Cadastro de Funcionários apenas para admin -->
+            <?php if ($permissao === 'a') : ?>
+                <a href="cadastro_funcionario.php" class="menu-btn">Cadastro de Funcionários</a>
+            <?php endif; ?>
+            <a href="vendas.php" class="menu-btn">Cadastrar Venda</a>
+            <a href="logout.php" class="menu-btn">Sair</a>
+        </div>
+    </div>
 </body>
 </html>
