@@ -7,49 +7,57 @@ if (!isset($_SESSION['cpf'])) {
     exit();
 }
 
+// Verifica se foi fornecido um CPF para edição
+if (!isset($_GET['cpf'])) {
+    echo "<script>alert('CPF não fornecido!');window.location.href='funcionarios.php';</script>";
+    exit();
+}
+
+$cpf = $_GET['cpf'];
+
+// Conexão com o banco de dados
+$conn = new mysqli('127.0.0.1:3307', 'root', '', 'sistema_mercado');
+
+// Verifica se houve erro na conexão
+if ($conn->connect_error) {
+    die("Falha na conexão com o banco de dados: " . $conn->connect_error);
+}
+
+// Busca os dados do funcionário para edição
+$sql = "SELECT * FROM funcionarios WHERE cpf = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('s', $cpf);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows == 0) {
+    echo "<script>alert('Funcionário não encontrado!');window.location.href='funcionarios.php';</script>";
+    exit();
+}
+
+$funcionario = $result->fetch_assoc();
+
 // Verifica se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Conexão com o banco de dados
-    $conn = new mysqli('127.0.0.1:3307', 'root', '', 'sistema_mercado');
-
-    // Verifica se houve erro na conexão
-    if ($conn->connect_error) {
-        die("Falha na conexão com o banco de dados: " . $conn->connect_error);
-    }
-
-    // Recebe os dados do formulário
-    $cpf = $_POST['cpf'];
     $nome = $_POST['nome'];
-    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // Senha criptografada
     $permissao = $_POST['permissao'];
     $salario_220h = $_POST['salario_220h'];
     $horas_trabalhadas = $_POST['horas_trabalhadas'];
 
-    // Verifica se o CPF já está cadastrado
-    $verifica_cpf = "SELECT * FROM funcionarios WHERE cpf = ?";
-    $stmt_verifica = $conn->prepare($verifica_cpf);
-    $stmt_verifica->bind_param('s', $cpf);
-    $stmt_verifica->execute();
-    $result = $stmt_verifica->get_result();
-    if ($result->num_rows > 0) {
-        echo "<script>alert('CPF já cadastrado!');window.location.href='cadastro_funcionario.php';</script>";
-        exit();
-    }
+    // Atualiza os dados do funcionário
+    $sql_update = "UPDATE funcionarios SET nome = ?, permissao = ?, salario_220h = ?, horas_trabalhadas = ? WHERE cpf = ?";
+    $stmt_update = $conn->prepare($sql_update);
+    $stmt_update->bind_param('ssdis', $nome, $permissao, $salario_220h, $horas_trabalhadas, $cpf);
 
-    // Insere o funcionário no banco de dados
-    $sql = "INSERT INTO funcionarios (cpf, nome, senha, permissao, salario_220h, horas_trabalhadas) VALUES (?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('ssssdi', $cpf, $nome, $senha, $permissao, $salario_220h, $horas_trabalhadas);
-
-    if ($stmt->execute()) {
-        echo "<script>alert('Funcionário cadastrado com sucesso!');window.location.href='funcionarios.php';</script>";
+    if ($stmt_update->execute()) {
+        echo "<script>alert('Funcionário atualizado com sucesso!');window.location.href='funcionarios.php';</script>";
     } else {
-        echo "<script>alert('Erro ao cadastrar funcionário!');window.location.href='cadastro_funcionario.php';</script>";
+        echo "<script>alert('Erro ao atualizar funcionário!');</script>";
     }
-
-    $stmt->close();
-    $conn->close();
 }
+
+$stmt->close();
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -57,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Funcionário</title>
+    <title>Editar Funcionário</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -126,35 +134,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <div class="container">
-        <h1>Cadastro de Funcionário</h1>
+        <h1>Editar Funcionário</h1>
 
-        <!-- Formulário de Cadastro de Funcionário -->
         <form method="POST" action="">
-            <label for="cpf">CPF:</label>
-            <input type="text" id="cpf" name="cpf" required>
-
             <label for="nome">Nome:</label>
-            <input type="text" id="nome" name="nome" required>
-
-            <label for="senha">Senha:</label>
-            <input type="password" id="senha" name="senha" required>
+            <input type="text" id="nome" name="nome" value="<?= htmlspecialchars($funcionario['nome']); ?>" required>
 
             <label for="permissao">Permissão:</label>
             <select id="permissao" name="permissao" required>
-                <option value="admin">Admin</option>
-                <option value="funcionario">Funcionário</option>
+                <option value="admin" <?= $funcionario['permissao'] === 'admin' ? 'selected' : ''; ?>>Admin</option>
+                <option value="funcionario" <?= $funcionario['permissao'] === 'funcionario' ? 'selected' : ''; ?>>Funcionário</option>
             </select>
 
             <label for="salario_220h">Salário (220h):</label>
-            <input type="number" id="salario_220h" name="salario_220h" step="0.01" required>
+            <input type="number" id="salario_220h" name="salario_220h" step="0.01" value="<?= htmlspecialchars($funcionario['salario_220h']); ?>" required>
 
             <label for="horas_trabalhadas">Horas Trabalhadas:</label>
-            <input type="number" id="horas_trabalhadas" name="horas_trabalhadas" required>
+            <input type="number" id="horas_trabalhadas" name="horas_trabalhadas" value="<?= htmlspecialchars($funcionario['horas_trabalhadas']); ?>" required>
 
-            <button type="submit">Cadastrar Funcionário</button>
+            <button type="submit">Salvar Alterações</button>
         </form>
 
-        <a href="funcionarios.php" class="back-link">Lista de Funcionários</a>
+        <a href="funcionarios.php" class="back-link">Voltar para Lista de Funcionários</a>
     </div>
 </body>
 </html>

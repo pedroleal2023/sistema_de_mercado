@@ -1,4 +1,7 @@
 <?php
+// Inicia a sessão
+session_start();
+
 // Conexão com o banco de dados
 $conn = new mysqli('127.0.0.1:3307', 'root', '', 'sistema_mercado');
 
@@ -8,10 +11,10 @@ if ($conn->connect_error) {
 }
 
 // Captura os dados do formulário
-$cpf = $_POST['cpf'];
-$senha = $_POST['senha'];
+$cpf = $_POST['cpf'] ?? '';
+$senha = $_POST['senha'] ?? '';
 
-// Verifica se o CPF e a senha existem no banco
+// Prepara e executa a consulta SQL para validar o login
 $sql = "SELECT cpf, permissao FROM funcionarios WHERE cpf = ? AND senha = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('ss', $cpf, $senha);
@@ -20,17 +23,18 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     // Login bem-sucedido
-    $usuario = $result->fetch_assoc(); // Obtém os dados do usuário
-    session_start();
+    $usuario = $result->fetch_assoc();
     $_SESSION['cpf'] = $usuario['cpf']; // Armazena o CPF na sessão
     $_SESSION['permissao'] = $usuario['permissao']; // Armazena a permissão na sessão
-    header("Location: dashboard.php"); // Redireciona para o dashboard
+
+    // Redireciona para o dashboard
+    header("Location: dashboard.php");
     exit();
 } else {
-    // Falha no login
-    echo "<script>alert('CPF ou senha incorretos!');window.location.href='login.html';</script>";
+    // Login falhou
+    echo "<script>alert('CPF ou senha incorretos!'); window.location.href='login.html';</script>";
 }
 
+// Fecha a conexão
 $stmt->close();
 $conn->close();
-?>

@@ -7,6 +7,8 @@ if (!isset($_SESSION['cpf'])) {
     exit();
 }
 
+$mensagem = ''; // Variável para armazenar a mensagem de sucesso ou erro
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Conexão com o banco de dados
     $conn = new mysqli('127.0.0.1:3307', 'root', '', 'sistema_mercado');
@@ -52,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_atualiza_estoque->bind_param('is', $nova_quantidade, $codigo);
             $stmt_atualiza_estoque->execute();
 
-            echo "Venda registrada com sucesso!";
+            $mensagem = "Venda registrada com sucesso!";
         } else {
-            echo "Não há estoque suficiente para a venda!";
+            $mensagem = "Não há estoque suficiente para a venda!";
         }
     } else {
-        echo "Produto não encontrado!";
+        $mensagem = "Produto não encontrado!";
     }
 
     // Fecha as conexões
@@ -74,11 +76,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastrar Venda</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Seu CSS -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 50px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: # #0056b3;
+        }
+
+        a {
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        /* Estilo para a mensagem de sucesso ou erro */
+        #mensagem {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #007BFF; /* Azul */
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        #mensagem.error {
+            background-color: #f44336;
+        }
+    </style>
 </head>
 <body>
+    <!-- Mensagem de sucesso ou erro -->
+    <?php if ($mensagem): ?>
+        <div id="mensagem" class="<?php echo (strpos($mensagem, 'sucesso') !== false) ? '' : 'error'; ?>">
+            <?php echo $mensagem; ?>
+        </div>
+    <?php endif; ?>
+
     <div class="container">
-        <h1>Cadastro de Venda</h1>
+        <h1>Cadastrar Venda</h1>
         <form action="vendas.php" method="POST">
             <label for="codigo">Código do Produto:</label>
             <input type="text" id="codigo" name="codigo" required>
@@ -92,11 +184,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit">Cadastrar Venda</button>
         </form>
 
+        <br>
         <!-- Botão de voltar ao dashboard -->
-        <br><br>
         <a href="dashboard.php">
-            <button type="button">Voltar ao Dashboard</button>
+            <button type="button">Voltar ao Menu Principal</button>
         </a>
     </div>
+
+    <script>
+        // Exibe a mensagem e depois a esconde
+        window.onload = function() {
+            var mensagem = document.getElementById('mensagem');
+            if (mensagem) {
+                mensagem.style.display = 'block'; // Exibe a mensagem
+                setTimeout(function() {
+                    mensagem.style.display = 'none'; // Esconde a mensagem após 3 segundos
+                }, 3000);
+            }
+        };
+    </script>
 </body>
 </html>
