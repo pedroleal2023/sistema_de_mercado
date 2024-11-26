@@ -11,9 +11,9 @@ Este é um sistema simples para gerenciamento de um mercado, desenvolvido com o 
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Linguagem:** Java
-- **IDE:** IntelliJ IDEA / Visual Studio Code
-- **Gerenciamento de Dependências:** Maven/Gradle (caso aplicável)
+- **Backend:** PHP
+- **Frontend:** Html / CSS
+- **IDE:** Visual Studio Code
 
 ## 🚀 Como Executar o Projeto
 
